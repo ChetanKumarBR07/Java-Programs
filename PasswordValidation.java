@@ -5,14 +5,15 @@ public class PasswordValidation {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter password: ");
         String pwd = sc.nextLine();
-        
-        boolean valid = pwd.length() >= 8 &&
-                        pwd.matches(".[A-Z].") &&
-                        pwd.matches(".[a-z].") &&
-                        pwd.matches(".\\d.") &&
-                        pwd.matches(".[@#!$%^&()].*");
 
+        boolean lengthCheck = pwd.length() >= 8;
+        boolean uppercaseCheck = pwd.matches(".*[A-Z].*");
+        boolean lowercaseCheck = pwd.matches(".*[a-z].*");
+        boolean digitCheck = pwd.matches(".*\\d.*");
+        boolean specialCharCheck = pwd.matches(".*[@#!$%^&()].*");
+        boolean valid = lengthCheck && uppercaseCheck && lowercaseCheck && digitCheck && specialCharCheck;
         System.out.println(valid ? "Valid Password" : "Invalid Password");
+
         sc.close();
     }
 }
