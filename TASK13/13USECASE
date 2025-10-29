@@ -1,0 +1,79 @@
+import java.util.*;
+
+class Task {
+    int id, cpu, memory, time;
+    Task(int id, int cpu, int memory, int time) {
+        this.id = id;
+        this.cpu = cpu;
+        this.memory = memory;
+        this.time = time;
+    }
+}
+
+class Server {
+    int id, maxCpu, maxMemory, usedCpu = 0, usedMemory = 0;
+    List<Task> tasks = new ArrayList<>();
+
+    Server(int id, int cpu, int memory) {
+        this.id = id;
+        this.maxCpu = cpu;
+        this.maxMemory = memory;
+    }
+
+    boolean canAssign(Task t) {
+        return usedCpu + t.cpu <= maxCpu && usedMemory + t.memory <= maxMemory;
+    }
+
+    void assign(Task t) {
+        tasks.add(t);
+        usedCpu += t.cpu;
+        usedMemory += t.memory;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // --- Sample Input ---
+        int n = 5, m = 2;
+        Task[] tasks = {
+            new Task(1, 30, 50, 10),
+            new Task(2, 20, 30, 5),
+            new Task(3, 50, 40, 8),
+            new Task(4, 10, 10, 3),
+            new Task(5, 40, 60, 7)
+        };
+
+        Server[] servers = {
+            new Server(1, 100, 100),
+            new Server(2, 80, 100)
+        };
+
+        // --- Greedy Load Balancing ---
+        Arrays.sort(tasks, (a, b) -> (b.cpu + b.memory) - (a.cpu + a.memory));
+
+        for (Task t : tasks) {
+            Server best = null;
+            for (Server s : servers) {
+                if (s.canAssign(t)) {
+                    if (best == null ||
+                       (s.usedCpu + s.usedMemory) < (best.usedCpu + best.usedMemory))
+                        best = s;
+                }
+            }
+            if (best != null) best.assign(t);
+            else System.out.println("⚠️ Task " + t.id + " could not be assigned!");
+        }
+
+        // --- Output ---
+        for (Server s : servers) {
+            System.out.println("\nServer " + s.id + " tasks:");
+            int totalTime = 0;
+            for (Task t : s.tasks) {
+                System.out.println("  Task " + t.id + " (CPU=" + t.cpu +
+                                   ", MEM=" + t.memory + ", TIME=" + t.time + ")");
+                totalTime += t.time;
+            }
+            System.out.println("  Total Execution Time: " + totalTime);
+        }
+    }
+}
